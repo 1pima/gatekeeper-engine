@@ -1,0 +1,24 @@
+services:
+  vault:
+    image: hashicorp/vault:1.15
+    container_name: local-vault
+    ports:
+      - '${HCORP_PORT:-8200}:8200'
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=${HCORP_TOKEN:-root}
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+      - SKIP_SETCAP=true
+    command: server -dev
+  # docker exec -e VAULT_ADDR=http://127.0.0.1:8200 local-vault vault secrets enable transit
+  # docker exec -e VAULT_ADDR=http://127.0.0.1:8200 local-vault vault write -f transit/keys/my-app-kek
+
+  db:
+    image: postgres:latest
+    container_name: db
+    restart: always
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB_NAME:-postgres}
+      POSTGRES_USER: ${POSTGRES_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
