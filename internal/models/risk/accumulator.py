@@ -15,14 +15,14 @@ class Accumulator(BaseModel):
     current_amount = Column(Numeric(15, 2), nullable=False)
     current_count = Column(BigInteger, nullable=False)
 
-    created_at = Column(DateTime, default=datetime.utcnow())
+    created_at = Column(DateTime, default=datetime.utcnow)
     reset_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     version = Column(Integer, default=1)
 
-    token_id = Column(BigInteger, ForeignKey(TokenData.id), nullable=False)
-    token = relationship(TokenData, back_populates='limit', overlaps='limit', uselist=False)
+    token_id = Column(BigInteger, ForeignKey('vault.token.id'), nullable=False)
+    token = relationship('TokenData', back_populates='accumulators')
 
     def __repr__(self):
         return f'<Accumulator {self.current_amount}KZT {self.current_count}x [{self.token}]>'

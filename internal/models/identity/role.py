@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, BigInteger
+from sqlalchemy.orm import relationship
 from sqlalchemy_utils import ChoiceType
 
 from internal.const.rbac import RoleName
@@ -15,6 +16,12 @@ class Role(BaseModel):
     id = Column(BigInteger, primary_key=True)
     name = Column(ChoiceType(RoleName, impl=String()), nullable=False)
     description = Column(String(255))
+    users = relationship(
+        'User',
+        secondary='identity.users_roles',
+        back_populates='roles',
+        lazy='dynamic'
+    )
 
     def __repr__(self):
         return f'<Role #{self.id} [{self.name}]>'

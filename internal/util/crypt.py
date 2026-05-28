@@ -12,13 +12,16 @@ class VaultCrypt:
     NONCE_LENGTH = 12
     DEK_LENGTH = 32
 
-    def __init__(self, hvac_url: str = None, token: str = None, master_key_name: str = None, hmac_key: str = None):
-        if hvac_url and token:
-            self._vault = hvac.Client(url=hvac_url, token=token)
-        if master_key_name:
-            self.master_key_name = master_key_name
-        if hmac_key:
-            self._hmac_key = hmac_key.encode()
+    def __init__(self):
+        # todo убрать хранения ключа для хэширования из памяти, хранить в воулте либо инитить клиент hmac
+        self._vault: hvac.Client = None
+        self.master_key_name: str = None
+        self._hmac_key: bytes = None
+
+    def configure(self, hvac_url: str, token: str, master_key_name: str, hmac_key: str):
+        self._vault = hvac.Client(url=hvac_url, token=token)
+        self.master_key_name = master_key_name
+        self._hmac_key = hmac_key.encode()
 
     def nonce(self):
         return os.urandom(self.NONCE_LENGTH)

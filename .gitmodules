@@ -1,0 +1,6 @@
+[submodule "db"]
+	path = db
+	url = git@github.com:1pima/gatekeeper-migrator.git
+[submodule "proto-contracts"]
+	path = proto-contracts
+	url = git@github.com:1pima/gatekeeper-proto.git

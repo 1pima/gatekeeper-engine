@@ -1,1 +1,13 @@
+# grpc
+/contracts/
+
+# submodules
+/proto-contracts/
+/db/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
 .env

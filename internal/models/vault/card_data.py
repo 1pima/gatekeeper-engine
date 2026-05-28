@@ -1,7 +1,6 @@
 from sqlalchemy import Column, String, Boolean, BigInteger, ForeignKey
 from sqlalchemy.orm import relationship
 from ..base import BaseModel
-from ..identity import User, Organization
 
 
 class CardData(BaseModel):
@@ -21,8 +20,10 @@ class CardData(BaseModel):
     is_blocked = Column(Boolean, default=False)
     description = Column(String)
 
-    user_id = Column(BigInteger, ForeignKey(User.id), nullable=False)
-    user = relationship(Organization, back_populates='card', overlaps='card', uselist=False)
+    user_id = Column(BigInteger, ForeignKey('identity.user.id'), nullable=False)
+    user = relationship('User', back_populates='cards')
+
+    tokens = relationship('TokenData', back_populates='card')
 
     def __repr__(self):
         return f'<Card #{self.id} [{self.mask}/{self.hash}]>'

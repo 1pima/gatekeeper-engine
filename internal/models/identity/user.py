@@ -21,14 +21,21 @@ class User(BaseModel):
     email = Column(String(255), unique=True)
     password = Column(String(255))
     is_active = Column(Boolean(), default=False)
-    created_at = Column(DateTime, default=datetime.utcnow())
-    updated_at = Column(DateTime, default=datetime.utcnow())
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # organization
     organization_id = Column(BigInteger, ForeignKey(Organization.id), nullable=False)
-    organization = relationship(Organization, back_populates='user', overlaps='user', uselist=False)
+    organization = relationship(Organization, back_populates='users', uselist=False)
     # rbac
-    roles = relationship('Role', secondary=UsersRoles.__table__, backref=backref('users', lazy='dynamic'))
+    roles = relationship(
+        'Role',
+        secondary='identity.users_roles',
+        back_populates='users'
+    )
+
+    cards = relationship('CardData', back_populates='user')
+    tokens = relationship('TokenData', back_populates='user')
 
     def __repr__(self):
-        return f'<Organization #{self.id} [{self.username}/{self.email}]>'
+        return f'<User #{self.id} [{self.username}/{self.email}]>'

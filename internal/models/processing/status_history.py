@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, BigInteger, ForeignKey, Integer, Boolean
+from sqlalchemy import Column, String, BigInteger, ForeignKey, Integer, Boolean, Uuid
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import ChoiceType
 
@@ -22,8 +22,30 @@ class StatusHistory(BaseModel):
     message = Column(String)
     description = Column(String)
 
-    transaction_id = Column(BigInteger, ForeignKey(Transaction.id), nullable=False)
-    transaction = relationship(TokenData, back_populates='status', overlaps='status', uselist=False)
+    transaction_id = Column(Uuid, ForeignKey('processing.transaction.id'), nullable=False)
+    transaction = relationship('Transaction', back_populates='status_history')
 
     def __repr__(self):
         return f'<Status of #{self.transaction_id} [{self.status}]>'
+
+    @classmethod
+    def create(cls, status, code, message, transaction_id, desc=None):
+        state = cls()
+        state.status = status
+        state.code = code
+        state.message = message
+        state.transaction_id = transaction_id
+
+        if desc:
+            state.description = desc
+
+        cls.query.session.add(state)
+        cls.query.session.commit()
+
+    def change(self, status, code, message, desc=None):
+        # делаем данную запись более неактуальной
+        self.is_actual = False
+        self.query.session.commit()
+
+        # создаем новую
+        self.create(status, code, message, self.transaction_id, desc)

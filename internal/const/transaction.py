@@ -13,7 +13,19 @@ class Currency(IntEnum):
 
 class TransactionStatus(IntEnum):
     NEW = 1
-    AUTHORIZED = 2
-    REVERSED = 3
-    CHARGED = 4
-    REFUNDED = 5
+    DECLINED = 2
+    AUTHORIZED = 3
+    REVERSED = 4
+    CHARGED = 5
+    REFUNDED = 6
+
+    def is_possible(self, status):
+        conditions = {
+            self.NEW: (self.DECLINED, self.AUTHORIZED),
+            self.DECLINED: (),
+            self.AUTHORIZED: (self.REVERSED, self.CHARGED),
+            self.REVERSED: (),
+            self.CHARGED: (),
+            self.REFUNDED: ()
+        }
+        return status in conditions[self]

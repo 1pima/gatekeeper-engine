@@ -22,11 +22,11 @@ class Limits(BaseModel):
     date_end = Column(DateTime, default=datetime.utcnow())
     period_type = Column(ChoiceType(LimitPeriodType, impl=Integer()), nullable=False)
 
-    mcc_id = Column(BigInteger, ForeignKey(MCC.id), nullable=False)
-    mcc = relationship(MCC, back_populates='limit', overlaps='limit', uselist=False)
+    mcc_id = Column(BigInteger, ForeignKey('catalog.mcc.id'), nullable=False)
+    mcc = relationship('MCC')
 
-    token_id = Column(BigInteger, ForeignKey(TokenData.id), nullable=False)
-    token = relationship(TokenData, back_populates='limit', overlaps='limit', uselist=False)
+    token_id = Column(BigInteger, ForeignKey('vault.token.id'), nullable=False)
+    token = relationship('TokenData', back_populates='limits')
 
     def __repr__(self):
         return f'<Limit {self.amount}KZT {self.MCC} [{self.date_start.date} - {self.date_end.date}] of {self.token}>'
